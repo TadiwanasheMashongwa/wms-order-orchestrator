@@ -10,6 +10,9 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
+    private String customerId;
+
     public Order() {}
 
     public Long getId() {
@@ -18,5 +21,13 @@ public class Order {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(String customerId) {
+        this.customerId = customerId;
     }
 }
