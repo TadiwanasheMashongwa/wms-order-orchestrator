@@ -2,6 +2,8 @@ package com.tadiwanashe.wms.entity;
 
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
+
 @Entity
 @Table(name = "orders")
 public class Order {
@@ -12,10 +14,13 @@ public class Order {
 
     @Column(nullable = false)
     private String customerId;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private OrderStatus status;
 
+    @Column(nullable = false)
+    private BigDecimal totalAmount;
     public Order() {}
 
     public Long getId() {
@@ -39,5 +44,12 @@ public class Order {
 
     public void setStatus(OrderStatus status) {
         this.status = status;
+    }
+    public java.math.BigDecimal getTotalAmount() {
+        return totalAmount;
+    }
+
+    public void setTotalAmount(BigDecimal totalAmount) {
+        this.totalAmount = totalAmount;
     }
 }
