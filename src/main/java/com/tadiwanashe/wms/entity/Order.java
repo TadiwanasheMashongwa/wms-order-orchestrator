@@ -3,6 +3,7 @@ package com.tadiwanashe.wms.entity;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 
 @Entity
 @Table(name = "orders")
@@ -21,6 +22,10 @@ public class Order {
 
     @Column(nullable = false)
     private BigDecimal totalAmount;
+
+    @Column(nullable = false)
+    private Instant createdAt;
+
     public Order() {}
 
     public Long getId() {
@@ -51,5 +56,12 @@ public class Order {
 
     public void setTotalAmount(BigDecimal totalAmount) {
         this.totalAmount = totalAmount;
+    }
+
+    public Instant getCreatedAt(){
+        return createdAt;
+    }
+    public void setCreatedAt(Instant createdAt){
+        this.createdAt=createdAt;
     }
 }
