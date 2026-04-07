@@ -12,6 +12,9 @@ public class Order {
 
     @Column(nullable = false)
     private String customerId;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private OrderStatus status;
 
     public Order() {}
 
@@ -29,5 +32,12 @@ public class Order {
 
     public void setCustomerId(String customerId) {
         this.customerId = customerId;
+    }
+    public OrderStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(OrderStatus status) {
+        this.status = status;
     }
 }
