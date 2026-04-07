@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface OrderRepository extends JpaRepository<Order,Long> {
     List<Order>  findByCustomerId(String CustomerId);
-    List<Order> findStatus(String Status);
+    List<Order> findByStatus(String Status);
 }
