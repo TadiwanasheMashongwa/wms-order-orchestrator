@@ -4,6 +4,8 @@ import com.tadiwanashe.wms.entity.Order;
 import com.tadiwanashe.wms.entity.OrderStatus;
 import com.tadiwanashe.wms.messaging.KafkaOrderEventPublisher;
 import com.tadiwanashe.wms.repository.OrderRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -32,10 +34,12 @@ public class OrderService {
         return saved;
     }
 
+    @Cacheable(value = "orders", key = "#id")
     public Optional<Order> findById(Long id) {
         return orderRepository.findById(id);
     }
 
+    @CacheEvict(value = "orders", key = "#id")
     public Optional<Order> updateStatus(Long id, OrderStatus newStatus) {
         return orderRepository.findById(id).map(order -> {
             order.setStatus(newStatus);

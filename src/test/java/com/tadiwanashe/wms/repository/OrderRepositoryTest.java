@@ -1,10 +1,12 @@
 package com.tadiwanashe.wms.repository;
 
+import com.tadiwanashe.wms.config.TestCacheConfig;
 import com.tadiwanashe.wms.entity.Order;
 import com.tadiwanashe.wms.entity.OrderStatus;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,7 +19,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @ActiveProfiles("test")
 @Transactional
-class OrderRepositoryTest {
+@Import(TestCacheConfig.class)
+public class OrderRepositoryTest {
 
     @Autowired
     private OrderRepository orderRepository;
