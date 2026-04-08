@@ -61,4 +61,17 @@ class OrderControllerTest {
                 .andExpect(jsonPath("$.status").value("PENDING"))
                 .andExpect(jsonPath("$.customerId").value("CUST-001"));
     }
+
+    @Test
+    void shouldReturn400WhenCustomerIdIsMissing() throws Exception {
+        mockMvc.perform(post("/orders")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "customerId": "",
+                                    "totalAmount": "250.00"
+                                }
+                                """))
+                .andExpect(status().isBadRequest());
+    }
 }

@@ -2,8 +2,13 @@ package com.tadiwanashe.wms.controller;
 
 import com.tadiwanashe.wms.entity.Order;
 import com.tadiwanashe.wms.service.OrderService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,10 +27,18 @@ public class OrderController {
     }
 
     @PostMapping
-    public ResponseEntity<Order> createOrder(@RequestBody CreateOrderRequest request) {
+    public ResponseEntity<Order> createOrder(@Valid @RequestBody CreateOrderRequest request) {
         Order order = orderService.createOrder(request.customerId(), request.totalAmount());
         return ResponseEntity.status(HttpStatus.CREATED).body(order);
     }
 
-    public record CreateOrderRequest(String customerId, BigDecimal totalAmount) {}
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Void> handleValidationException(MethodArgumentNotValidException ex) {
+        return ResponseEntity.badRequest().build();
+    }
+
+    public record CreateOrderRequest(
+            @NotBlank String customerId,
+            @NotNull BigDecimal totalAmount
+    ) {}
 }
