@@ -15,8 +15,10 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.Optional;
 
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -73,5 +75,30 @@ class OrderControllerTest {
                                 }
                                 """))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldReturn200WhenOrderIsFound() throws Exception {
+        Order mockOrder = new Order();
+        mockOrder.setId(1L);
+        mockOrder.setCustomerId("CUST-001");
+        mockOrder.setStatus(OrderStatus.PENDING);
+        mockOrder.setTotalAmount(new BigDecimal("250.00"));
+        mockOrder.setCreatedAt(Instant.now());
+
+        when(orderService.findById(1L)).thenReturn(Optional.of(mockOrder));
+
+        mockMvc.perform(get("/orders/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.customerId").value("CUST-001"));
+    }
+
+    @Test
+    void shouldReturn404WhenOrderNotFound() throws Exception {
+        when(orderService.findById(99L)).thenReturn(Optional.empty());
+
+        mockMvc.perform(get("/orders/99"))
+                .andExpect(status().isNotFound());
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.Optional;
 
 @Service
 public class OrderService {
@@ -20,9 +21,13 @@ public class OrderService {
     public Order createOrder(String customerId, BigDecimal totalAmount) {
         Order order = new Order();
         order.setCustomerId(customerId);
-        order.setTotalAmount(totalAmount);
         order.setStatus(OrderStatus.PENDING);
+        order.setTotalAmount(totalAmount);
         order.setCreatedAt(Instant.now());
         return orderRepository.save(order);
+    }
+
+    public Optional<Order> findById(Long id) {
+        return orderRepository.findById(id);
     }
 }
