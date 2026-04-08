@@ -2,6 +2,7 @@ package com.tadiwanashe.wms.service;
 
 import com.tadiwanashe.wms.entity.Order;
 import com.tadiwanashe.wms.entity.OrderStatus;
+import com.tadiwanashe.wms.messaging.KafkaOrderEventPublisher;
 import com.tadiwanashe.wms.repository.OrderRepository;
 import org.springframework.stereotype.Service;
 
@@ -13,9 +14,11 @@ import java.util.Optional;
 public class OrderService {
 
     private final OrderRepository orderRepository;
+    private final KafkaOrderEventPublisher eventPublisher;
 
-    public OrderService(OrderRepository orderRepository) {
+    public OrderService(OrderRepository orderRepository, KafkaOrderEventPublisher eventPublisher) {
         this.orderRepository = orderRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     public Order createOrder(String customerId, BigDecimal totalAmount) {
@@ -24,7 +27,9 @@ public class OrderService {
         order.setStatus(OrderStatus.PENDING);
         order.setTotalAmount(totalAmount);
         order.setCreatedAt(Instant.now());
-        return orderRepository.save(order);
+        Order saved = orderRepository.save(order);
+        eventPublisher.publishOrderCreated(saved);
+        return saved;
     }
 
     public Optional<Order> findById(Long id) {
