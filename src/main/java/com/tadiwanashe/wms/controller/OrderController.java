@@ -1,6 +1,7 @@
 package com.tadiwanashe.wms.controller;
 
 import com.tadiwanashe.wms.entity.Order;
+import com.tadiwanashe.wms.entity.OrderStatus;
 import com.tadiwanashe.wms.service.OrderService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -41,6 +43,14 @@ public class OrderController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<Order> updateStatus(@PathVariable Long id,
+                                              @RequestBody UpdateStatusRequest request) {
+        return orderService.updateStatus(id, request.status())
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Void> handleValidationException(MethodArgumentNotValidException ex) {
         return ResponseEntity.badRequest().build();
@@ -50,4 +60,6 @@ public class OrderController {
             @NotBlank String customerId,
             @NotNull BigDecimal totalAmount
     ) {}
+
+    public record UpdateStatusRequest(OrderStatus status) {}
 }

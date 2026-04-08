@@ -19,6 +19,7 @@ import java.util.Optional;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -99,6 +100,44 @@ class OrderControllerTest {
         when(orderService.findById(99L)).thenReturn(Optional.empty());
 
         mockMvc.perform(get("/orders/99"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void shouldReturn200WhenStatusIsUpdated() throws Exception {
+        Order updatedOrder = new Order();
+        updatedOrder.setId(1L);
+        updatedOrder.setCustomerId("CUST-001");
+        updatedOrder.setStatus(OrderStatus.CONFIRMED);
+        updatedOrder.setTotalAmount(new BigDecimal("250.00"));
+        updatedOrder.setCreatedAt(Instant.now());
+
+        when(orderService.updateStatus(1L, OrderStatus.CONFIRMED))
+                .thenReturn(Optional.of(updatedOrder));
+
+        mockMvc.perform(patch("/orders/1/status")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "status": "CONFIRMED"
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("CONFIRMED"));
+    }
+
+    @Test
+    void shouldReturn404WhenUpdatingStatusOfNonExistentOrder() throws Exception {
+        when(orderService.updateStatus(99L, OrderStatus.CONFIRMED))
+                .thenReturn(Optional.empty());
+
+        mockMvc.perform(patch("/orders/99/status")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "status": "CONFIRMED"
+                                }
+                                """))
                 .andExpect(status().isNotFound());
     }
 }

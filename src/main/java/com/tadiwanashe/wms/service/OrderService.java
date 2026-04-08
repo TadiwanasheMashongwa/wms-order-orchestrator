@@ -30,4 +30,11 @@ public class OrderService {
     public Optional<Order> findById(Long id) {
         return orderRepository.findById(id);
     }
+
+    public Optional<Order> updateStatus(Long id, OrderStatus newStatus) {
+        return orderRepository.findById(id).map(order -> {
+            order.setStatus(newStatus);
+            return orderRepository.save(order);
+        });
+    }
 }
